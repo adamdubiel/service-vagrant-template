@@ -85,6 +85,10 @@ supervisorctl reload
 ### openjdk 10/11
 apt-get install -y openjdk-11-jdk
 
+# workaround to regenerate certs in proper format
+/usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts
+/var/lib/dpkg/info/ca-certificates-java.postinst configure
+
 ### copy scripts
 cp /tmp/vagrant-scripts/toxiproxy_setup_proxies.sh /home/vagrant
 chmod +x /home/vagrant/toxiproxy_setup_proxies.sh
