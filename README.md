@@ -2,7 +2,7 @@
 
 Ready to use template for building stuff with Vagrant and some additional-services:
 
-* JDK 10
+* AdoptOpenJDK 11
 * [Supervisord](http://supervisord.org/)
 * [Toxiproxy 2.x](https://github.com/Shopify/toxiproxy#cli-example)
 * [Graphite](https://graphiteapp.org/) - [Link to Graphite on Vagrant](http://10.10.10.10:3080/)
