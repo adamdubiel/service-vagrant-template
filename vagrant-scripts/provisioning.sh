@@ -4,9 +4,11 @@
 # * toxiproxy: TCP proxy to inject faults & delays in network traffic
 # * wrk2: traffic generator with stable rps count
 # * supervisor: manage running apps
-# * OpenJDK 10
+# * OpenJDK 11
+# * Graphite + Grafana
 
-TOXI_VER=2.1.3
+TOXI_VER=2.1.4
+GRAFANA_VER=6.4.3
 
 ### Repositories
 
@@ -61,8 +63,8 @@ cp /opt/graphite/conf/carbon.conf.example /opt/graphite/conf/carbon.conf
 cat /tmp/vagrant-scripts/graphite-retention.conf > /opt/graphite/conf/storage-schemas.conf
 
 ### grafana
-wget -q -O /tmp/grafana.deb https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.0.4_amd64.deb
-dpkg -i /tmp/grafana.deb
+wget -q -O /tmp/grafana.deb "https://dl.grafana.com/oss/release/grafana_${GRAFANA_VER}_amd64.deb"
+dpkg -i /tmp/grafana.deb 
 
 ### toxiproxy
 # install toxiproxi
@@ -82,12 +84,15 @@ apt-get install -y supervisor
 cat /tmp/vagrant-scripts/supervisor-apps.conf > /etc/supervisor/conf.d/apps.conf
 supervisorctl reload
 
-### openjdk 10/11
-apt-get install -y openjdk-11-jdk
+### openjdk 11
+wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
+add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+apt-get update
+apt-get install -y adoptopenjdk-11-hotspot
 
 # workaround to regenerate certs in proper format
-/usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts
-/var/lib/dpkg/info/ca-certificates-java.postinst configure
+# /usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts
+# /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
 ### copy scripts
 cp /tmp/vagrant-scripts/toxiproxy_setup_proxies.sh /home/vagrant
